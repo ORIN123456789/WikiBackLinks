@@ -1,6 +1,6 @@
 import re
 from urllib import request
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class WikiUtils:
     """A class which contains all the needed utilities to get and parse a Wikipedia page"""
@@ -58,13 +58,21 @@ class WikiUtils:
 
     @staticmethod
     def print_wiki_back_links(original_URL, URLs):
-        """Each thread executes the print_back_link function for his URL"""
         print("*"*20, "\nBack Links:")
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            for URL in URLs:
+                futures.append(executor.submit(WikiUtils.print_back_link, original_URL=original_URL, URL=URL))
 
-        threads = [Thread(target=WikiUtils.print_back_link, args=(original_URL, URL)) for URL in URLs]
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
+            as_completed(futures)
 
-        print("*"*20, "\nDone")
+        print("*"*20)
+
+
+
+
+
+
+
+
+

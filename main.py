@@ -1,4 +1,6 @@
 import argparse
+import time
+
 from logger import logger
 from wiki_utils import WikiUtils
 
@@ -19,6 +21,7 @@ def get_URL():
 
 def main():
     try:
+        start_time = time.time()
         logger.info("Start running...")
         original_URL = get_URL()
         if not WikiUtils.is_wiki_page(original_URL):
@@ -27,6 +30,7 @@ def main():
         page_name = original_URL.split(r'/')[-1]
         logger.info(f"Total number of Wikipedia links is the page '{page_name}' - {len(wiki_links)}")
         WikiUtils.print_wiki_back_links(original_URL, wiki_links)
+        logger.info("Done. Execution time %.2f sec" % (time.time()-start_time))
 
     except Exception as e:
         logger.exception(e)
