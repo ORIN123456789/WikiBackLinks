@@ -13,7 +13,7 @@ class WikiUtils:
 
     @staticmethod
     def is_wiki_page(URL):
-        """:returns True if the page is an absolute or a relative Wikipedia page"""
+        """:returns true if the Wikipedia page exists"""
         if URL.startswith("/wiki/"):
             URL = WikiUtils.BASE_WIKI_URL + URL
         try:
@@ -21,6 +21,15 @@ class WikiUtils:
         except Exception:
             return False
         return web_URL.getcode() == 200 and URL.startswith(WikiUtils.BASE_WIKI_URL)
+
+    @staticmethod
+    def is_wiki_format(URL):
+        """return true if the URL is in the right format -
+         https://en.wikipedia.org/wiki/Page_name (absolute or relative)
+        Basic and inexpensive filtering
+        """
+        return URL.startswith("/wiki/") or URL.startswith(WikiUtils.BASE_WIKI_URL)
+
 
     @staticmethod
     def full_wiki_URL(URL):
@@ -37,7 +46,7 @@ class WikiUtils:
     @staticmethod
     def get_wiki_links(URL):
         """:return all the Wikipedia links in the html page"""
-        files = list(filter(WikiUtils.is_wiki_page, WikiUtils.get_links(URL)))
+        files = list(filter(WikiUtils.is_wiki_format, WikiUtils.get_links(URL)))
         return files
 
     @staticmethod
@@ -48,6 +57,8 @@ class WikiUtils:
     @staticmethod
     def print_back_link(original_URL, URL):
         """print URL if it links to original_URL"""
+        if not WikiUtils.is_wiki_page(URL):
+            return
         URL = WikiUtils.full_wiki_URL(URL)
         if URL == original_URL:
             return
